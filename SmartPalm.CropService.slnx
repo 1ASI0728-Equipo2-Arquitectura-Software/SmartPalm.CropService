@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SmartPalm.CropService.API/SmartPalm.CropService.API.csproj" />
+  <Project Path="SmartPalm.CropService.API.Tests/SmartPalm.CropService.API.Tests.csproj" />
+</Solution>

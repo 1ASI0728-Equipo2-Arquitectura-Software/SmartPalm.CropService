@@ -1,0 +1,6 @@
+@HostAddress = http://localhost:5102
+@AccessToken = replace-with-access-token
+
+GET {{HostAddress}}/api/v1/plantations
+Authorization: Bearer {{AccessToken}}
+Accept: application/json
