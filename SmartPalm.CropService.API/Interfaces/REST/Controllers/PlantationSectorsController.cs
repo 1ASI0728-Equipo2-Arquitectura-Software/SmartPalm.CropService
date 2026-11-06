@@ -16,13 +16,13 @@ public class PlantationSectorsController(
     CropQueryService queryService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> AssignSector(
+    public async Task<ActionResult<SectorResponse>> AssignSector(
         long plantationId,
         AssignSectorResource resource,
         CancellationToken cancellationToken)
     {
-        await commandService.AssignSectorAsync(resource.ToCommand(plantationId), cancellationToken);
-        return StatusCode(StatusCodes.Status201Created);
+        var result = await commandService.AssignSectorAsync(resource.ToCommand(plantationId), cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     [HttpGet]
