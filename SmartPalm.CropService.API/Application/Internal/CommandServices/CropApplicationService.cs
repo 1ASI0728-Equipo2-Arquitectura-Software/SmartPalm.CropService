@@ -41,7 +41,7 @@ public class CropCommandService(
         return Map(plantation);
     }
 
-    public async Task AssignSectorAsync(
+    public async Task<SectorResponse> AssignSectorAsync(
         AssignSectorCommand command,
         CancellationToken cancellationToken)
     {
@@ -49,7 +49,7 @@ public class CropCommandService(
         if (normalizedMac is not null && await sectors.FindByDeviceMacAsync(normalizedMac, cancellationToken) is not null)
             throw new InvalidOperationException($"IoT device '{normalizedMac}' is already assigned to a sector.");
 
-        await unitOfWork.ExecuteAsync(async transactionToken =>
+        return await unitOfWork.ExecuteAsync(async transactionToken =>
         {
             var plantation = await GetRequiredPlantationAsync(command.PlantationId, transactionToken);
             var sector = plantation.AssignSector(command.SectorName, normalizedMac);
@@ -57,7 +57,7 @@ public class CropCommandService(
             events.Enqueue("crop.sector-assigned.v1", new SectorAssignedIntegrationEvent(
                 sector.Id, command.PlantationId, normalizedMac, sector.Name, DateTime.UtcNow));
             await unitOfWork.SaveChangesAsync(transactionToken);
-            return true;
+            return Map(sector);
         }, cancellationToken);
     }
 
