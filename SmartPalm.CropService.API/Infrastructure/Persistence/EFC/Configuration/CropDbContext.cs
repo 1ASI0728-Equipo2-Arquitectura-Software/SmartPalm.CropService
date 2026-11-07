@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPalm.CropService.Domain.Repositories;
 using SmartPalm.CropService.Domain.Plantations;
+using SmartPalm.CropService.Infrastructure.Messaging;
 
 namespace SmartPalm.CropService.Infrastructure.Persistence;
 
@@ -11,6 +12,7 @@ public class CropDbContext(DbContextOptions<CropDbContext> options)
     public DbSet<Sector> Sectors => Set<Sector>();
     public DbSet<AgronomistAffiliation> Affiliations => Set<AgronomistAffiliation>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<InboxMessage> InboxMessages => Set<InboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,6 +65,12 @@ public class CropDbContext(DbContextOptions<CropDbContext> options)
             entity.Property(value => value.Content).HasColumnType("jsonb").IsRequired();
             entity.Property(value => value.Error).HasMaxLength(2000);
             entity.HasIndex(value => new { value.ProcessedOnUtc, value.OccurredOnUtc });
+        });
+        modelBuilder.Entity<InboxMessage>(entity =>
+        {
+            entity.ToTable("inbox_messages");
+            entity.HasKey(value => value.Id);
+            entity.Property(value => value.EventType).HasMaxLength(200).IsRequired();
         });
     }
 

@@ -180,6 +180,29 @@ namespace SmartPalm.CropService.Infrastructure.Persistence.Migrations
                     b.ToTable("sectors", "crop");
                 });
 
+            modelBuilder.Entity("SmartPalm.CropService.Infrastructure.Messaging.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("event_type");
+
+                    b.Property<DateTime>("ProcessedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("processed_at_utc");
+
+                    b.HasKey("Id")
+                        .HasName("pk_inbox_messages");
+
+                    b.ToTable("inbox_messages", "crop");
+                });
+
             modelBuilder.Entity("SmartPalm.CropService.Infrastructure.Persistence.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
