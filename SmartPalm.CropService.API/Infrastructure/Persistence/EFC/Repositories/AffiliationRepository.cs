@@ -32,4 +32,12 @@ internal class AffiliationRepository(CropDbContext context) : IAffiliationReposi
             .Where(value => value.PlantationId == plantationId && value.DetachedAt == null)
             .OrderByDescending(value => value.AffiliatedAt)
             .ToArrayAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<AgronomistAffiliation>> ListActiveByPlantationsAsync(
+        IReadOnlyCollection<long> plantationIds,
+        CancellationToken cancellationToken) =>
+        await context.Affiliations.AsNoTracking()
+            .Where(value => plantationIds.Contains(value.PlantationId) && value.DetachedAt == null)
+            .OrderBy(value => value.Id)
+            .ToArrayAsync(cancellationToken);
 }
