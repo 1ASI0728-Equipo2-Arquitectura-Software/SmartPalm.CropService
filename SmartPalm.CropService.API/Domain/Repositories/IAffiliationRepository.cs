@@ -8,4 +8,7 @@ public interface IAffiliationRepository
     Task<AgronomistAffiliation?> FindAsync(long agronomistId, long plantationId, CancellationToken cancellationToken);
     Task<IReadOnlyList<AgronomistAffiliation>> ListByAgronomistAsync(long agronomistId, CancellationToken cancellationToken);
     Task<IReadOnlyList<AgronomistAffiliation>> ListByPlantationAsync(long plantationId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AgronomistAffiliation>> ListActiveByPlantationsAsync(
+        IReadOnlyCollection<long> plantationIds,
+        CancellationToken cancellationToken);
 }

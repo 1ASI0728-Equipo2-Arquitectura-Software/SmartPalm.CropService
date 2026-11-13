@@ -7,5 +7,9 @@ public interface ISectorRepository
     Task<Sector?> GetAsync(long id, CancellationToken cancellationToken);
     Task<Sector?> FindByDeviceMacAsync(string deviceMacAddress, CancellationToken cancellationToken);
     Task<IReadOnlyList<Sector>> ListByPlantationAsync(long plantationId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Sector>> ListByPlantationsAsync(
+        IReadOnlyCollection<long> plantationIds,
+        long? sectorId,
+        CancellationToken cancellationToken);
     void Remove(Sector sector);
 }
