@@ -19,5 +19,15 @@ internal class SectorRepository(CropDbContext context) : ISectorRepository
             .OrderBy(value => value.Name)
             .ToArrayAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Sector>> ListByPlantationsAsync(
+        IReadOnlyCollection<long> plantationIds,
+        long? sectorId,
+        CancellationToken cancellationToken) =>
+        await context.Sectors.AsNoTracking()
+            .Where(value => plantationIds.Contains(value.PlantationId))
+            .Where(value => sectorId == null || value.Id == sectorId.Value)
+            .OrderBy(value => value.Id)
+            .ToArrayAsync(cancellationToken);
+
     public void Remove(Sector sector) => context.Sectors.Remove(sector);
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartPalm.CropService.Application.Abstractions;
 using SmartPalm.CropService.Application.Services;
+using SmartPalm.CropService.Application.EventHandlers;
 using SmartPalm.CropService.Domain.Repositories;
 using SmartPalm.CropService.Infrastructure.Configuration;
 using SmartPalm.CropService.Infrastructure.Messaging;
@@ -25,7 +26,9 @@ public static class DependencyInjection
         services.AddScoped<IIntegrationEventWriter, IntegrationEventWriter>();
         services.AddScoped<CropCommandService>();
         services.AddScoped<CropQueryService>();
+        services.AddScoped<UserDeletionEventHandler>();
         services.AddHostedService<OutboxPublisher>();
+        services.AddHostedService<UserDeletionConsumer>();
         return services;
     }
 }
