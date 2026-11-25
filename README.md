@@ -34,6 +34,52 @@ Para incluir RabbitMQ: `docker compose --env-file .env -f compose.local.yaml --p
 
 La API queda en `http://localhost:5102`; Swagger está disponible en `/swagger` y readiness en `/health/ready`.
 
+## Despliegue en Vultr/Coolify
+
+CropService se publica en Vultr 1 como una aplicación .NET independiente. PostgreSQL y RabbitMQ deben permanecer en Vultr 2, únicamente accesibles por la red privada.
+
+En Coolify:
+
+1. Crear una aplicación desde el repositorio público `SmartPalm.CropService`.
+2. Seleccionar la rama `prepare-deployment`.
+3. Usar **Dockerfile** como método de compilación.
+4. Configurar el Dockerfile como `Dockerfile`, el contexto de compilación como `/` y el puerto interno `8080`.
+5. Configurar `/health/ready` como health check.
+6. Registrar las variables siguientes como secretos o variables de ejecución; no versionar valores reales:
+
+```text
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://+:8080
+ConnectionStrings__CropDatabase=Host=10.6.96.4;Port=5432;Database=smartpalm_crop;Username=<usuario>;Password=<secreto>
+Jwt__Key=<misma clave compartida de al menos 32 bytes>
+Jwt__Issuer=smartpalm.identity
+Jwt__Audience=smartpalm.clients
+RabbitMq__Enabled=true
+RabbitMq__Uri=amqp://<usuario>:<password>@10.6.96.4:5672/
+RabbitMq__Exchange=smartpalm.events
+```
+
+Una alternativa declarativa para pruebas con Coolify Compose está disponible en `compose.coolify.yaml`. Esa composición no crea PostgreSQL ni RabbitMQ: consume los recursos privados de Vultr 2.
+
+La configuración de la composición usa estas variables:
+
+```text
+CROP_DB_HOST=10.6.96.4
+CROP_DB_PORT_REMOTE=5432
+CROP_DB_NAME=smartpalm_crop
+CROP_DB_USERNAME=<usuario>
+CROP_DB_PASSWORD=<secreto>
+CROP_API_PORT=8080
+JWT_KEY=<misma clave compartida>
+JWT_ISSUER=smartpalm.identity
+JWT_AUDIENCE=smartpalm.clients
+RABBITMQ_ENABLED=true
+RABBITMQ_URI=amqp://<usuario>:<password>@10.6.96.4:5672/
+RABBITMQ_EXCHANGE=smartpalm.events
+```
+
+No publicar `5432`, `5672` ni `15672` desde Vultr 1. Mantener `15672` cerrado al acceso público. No se deben incorporar credenciales, JWT ni tokens al repositorio.
+
 ## Desarrollo
 
 ```powershell

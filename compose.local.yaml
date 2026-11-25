@@ -27,11 +27,17 @@ services:
       Jwt__Key: ${JWT_KEY}
       RabbitMq__Enabled: ${RABBITMQ_ENABLED:-false}
       RabbitMq__Uri: ${RABBITMQ_URI:-amqp://guest:guest@rabbitmq:5672/}
+      RabbitMq__Exchange: ${RABBITMQ_EXCHANGE:-smartpalm.events}
     ports:
       - "${CROP_API_PORT:-5102}:8080"
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider --quiet http://localhost:8080/health/live || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
 
   rabbitmq:
     image: rabbitmq:4-management-alpine
